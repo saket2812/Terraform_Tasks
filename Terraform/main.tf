@@ -41,6 +41,13 @@ resource "aws_security_group" "flask_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]  # allow frontend and external access
   }
+  ingress {
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"] # or restrict to your IP: ["203.0.113.1/32"]
+ }
+
 
   egress {
     from_port   = 0
@@ -61,6 +68,13 @@ resource "aws_security_group" "express_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+  ingress {
+  from_port   = 22
+  to_port     = 22
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"] # or restrict to your IP: ["203.0.113.1/32"]
+}
+
 
   egress {
     from_port   = 0
@@ -74,6 +88,7 @@ resource "aws_security_group" "express_sg" {
 resource "aws_instance" "flask_backend" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
+  key_name               = "tutedude-aws-key" 
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.flask_sg.id]
   user_data              = file("backend_user_data.sh")
@@ -86,6 +101,7 @@ resource "aws_instance" "flask_backend" {
 resource "aws_instance" "express_frontend" {
   ami                    = var.ami_id
   instance_type          = var.instance_type
+  key_name               = "tutedude-aws-key" 
   subnet_id              = aws_subnet.public_subnet.id
   vpc_security_group_ids = [aws_security_group.express_sg.id]
   user_data              = templatefile("frontend_user_data.sh", {

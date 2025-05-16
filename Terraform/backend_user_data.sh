@@ -1,21 +1,13 @@
 #!/bin/bash
 sudo apt update -y
-sudo apt install -y python3-pip
-pip3 install flask flask_cors
+sudo apt install -y git python3-pip
 
-cat <<EOF > /home/ubuntu/app.py
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+# Clone only the backend part
+git clone https://github.com/saket2812/Terraform_Tasks.git /home/ubuntu/Terraform_Tasks
+cd /home/ubuntu/Terraform_Tasks/Backend
 
-app = Flask(__name__)
-CORS(app)
+# Install Python dependencies
+pip3 install -r requirements.txt
 
-@app.route('/submit', methods=['POST'])
-def submit():
-    return jsonify({"message": "Data received!"})
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
-EOF
-
-nohup python3 /home/ubuntu/app.py > /home/ubuntu/flask.log 2>&1 &
+# Run Flask app in the background
+nohup python3 app.py > /home/ubuntu/backend.log 2>&1 &
